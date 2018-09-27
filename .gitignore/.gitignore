@@ -1,0 +1,182 @@
+var map;
+var ajaxRequest;
+var plotlist;
+var plotlayers=[];
+
+function initmap() {
+	// set up the map
+	map = new L.Map('map');
+
+	// create the tile layer with correct attribution
+	var osmUrl='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+	var osmAttrib='Map data ? <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
+	var osm = new L.TileLayer(osmUrl, {minZoom: 1, maxZoom: 19, attribution: osmAttrib});		
+
+	// start the map in South-East England
+	map.setView(new L.LatLng(55.0583, 82.9969), 12);
+	map.addLayer(osm);
+	
+	var greenIcon = L.icon({
+		iconUrl: 'css/images/leaf-green.png',
+		shadowUrl: 'css/images/leaf-shadow.png',
+
+		iconSize:     [38, 95], // size of the icon
+		shadowSize:   [50, 64], // size of the shadow
+		iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+		shadowAnchor: [4, 62],  // the same for the shadow
+		popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+	});
+	
+	var orangeIcon = L.icon({
+		iconUrl: 'css/images/leaf-orange.png',
+		shadowUrl: 'css/images/leaf-shadow.png',
+
+		iconSize:     [38, 95], // size of the icon
+		shadowSize:   [50, 64], // size of the shadow
+		iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+		shadowAnchor: [4, 62],  // the same for the shadow
+		popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+	});
+	
+	var redIcon = L.icon({
+		iconUrl: 'css/images/leaf-red.png',
+		shadowUrl: 'css/images/leaf-shadow.png',
+
+		iconSize:     [38, 95], // size of the icon
+		shadowSize:   [50, 64], // size of the shadow
+		iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+		shadowAnchor: [4, 62],  // the same for the shadow
+		popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+	});
+	
+	var marker1 = L.marker([55.0583, 82.9969], {icon: greenIcon});
+	marker1.bindPopup("Зелёный лист")
+	var marker2 = L.marker([54.9863, 82.8594], {icon: orangeIcon});
+	marker2.bindPopup("Жёлтый лист")
+	var marker3 = L.marker([54.9829, 82.8965], {icon: redIcon});
+	marker3.bindPopup("Красный лист")
+	
+	var polyline1 = new L.Polyline([
+	  [55.060674991347625, 82.71915435791017],
+	  [55.02998990741095, 82.80429840087892]
+	], {
+	  color: 'green',
+	  weight: 5,
+	  opacity: 0.5
+	});
+	var polyline2 = new L.Polyline([
+	  [55.01581963086439, 82.69477844238283],
+	  [55.04317163778816, 82.76241302490236]
+	], {
+	  color: 'green',
+	  weight: 5,
+	  opacity: 0.5
+	});
+	var polyline3 = new L.Polyline([
+	  [55.015425940562984, 82.80601501464845],
+	  [55.07070155480088, 82.77271270751955]
+	], {
+	  color: 'green',
+	  weight: 5,
+	  opacity: 0.5
+	});
+	
+	var polygon1 = L.polygon([
+     [55.01020917912828, 82.60568618774415],
+	 [55.014736973233994, 82.63830184936525],
+	 [55.01591805283576, 82.6384735107422],
+	 [55.01759118938484, 82.6527214050293],
+	 [55.01552436350073, 82.6527214050293],
+	 [55.01749277152058, 82.67726898193361],
+	 [55.01729593506728, 82.69203186035158],
+	 [55.010504485632, 82.69941329956056],
+	 [55.00302271728109, 82.69495010375977],
+	 [55.00026592449467, 82.68945693969728],
+	 [55.00341652935713, 82.6750373840332],
+	 [55.011291959010954, 82.67314910888673],
+	 [55.00942168448734, 82.65014648437501],
+	 [55.00961855959725, 82.64156341552736],
+	 [55.006566886785535, 82.61426925659181],
+	 [55.00735443748223, 82.61426925659181],
+	 [55.007748207031604, 82.6055145263672]
+	]);
+	polygon1.bindPopup("Аэропорт")
+	var polygon2 = L.polygon([
+     [54.99160048521021, 82.69100189208986],
+	 [54.98923685878989, 82.72911071777345],
+	 [54.98470618571192, 82.73563385009767],
+	 [54.98470618571192, 82.75485992431642],
+	 [54.98175112339465, 82.75863647460939],
+	 [54.97150522313493, 82.74662017822267],
+	 [54.97308168565389, 82.72327423095705],
+	 [54.98214514427189, 82.7150344848633],
+	 [54.97997798158983, 82.69615173339845],
+	 [54.985100177585636, 82.69615173339845]
+	]);	
+	polygon2.bindPopup("Толмачёво")
+	var polygon3 = L.polygon([
+     [54.973475791614476, 82.92291641235353],
+	 [54.97485513201905, 82.93046951293947],
+	 [54.97613590568671, 82.92978286743164],
+	 [54.97751515472097, 82.93750762939455],
+	 [54.975938866242906, 82.94626235961915],
+	 [54.97702257121879, 82.94849395751955],
+	 [54.974263991932744, 82.95656204223634],
+	 [54.97160375385534, 82.9515838623047],
+	 [54.96973162883084, 82.94042587280275],
+	 [54.96933748612686, 82.92772293090822],
+	 [54.970815501323486, 82.92257308959962],
+	 [54.97318021250662, 82.92308807373048]
+	]);
+	polygon3.bindPopup("Бугринская роща")
+	
+	var markerks = L.layerGroup([marker1, marker2, marker3]);
+	map.addLayer(markerks);
+	var polylines = L.layerGroup([polyline1, polyline2, polyline3]);
+	map.addLayer(polylines);
+	var polygons = L.layerGroup([polygon1, polygon2, polygon3]);
+	map.addLayer(polygons);
+	
+	var overlayMaps = {
+		"Маркеры": markerks,
+		"Линии": polylines,
+		"Полигоны": polygons
+	};
+	
+	var baseMaps = {
+		"OSM": osm
+	};
+	
+	L.control.layers(baseMaps, overlayMaps).addTo(map);
+	
+	
+	
+	map.on('click', function(e) {
+   console.log("["+e.latlng.lat + ", " + e.latlng.lng+"],")
+});
+
+
+
+ L.control.scale().addTo(map);
+
+      
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+function drawLine()
+{
+	
+}
